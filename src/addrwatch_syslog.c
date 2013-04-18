@@ -17,6 +17,7 @@ static char doc[] = "Argp implementation, second try !\nThis documentation is us
 
 //----- Arguments accepted -----//
 static char args_doc[] = " ARG1 ARG2 ";
+static struct arguments arguments;
 
 
 //----- Choosable options -----//
@@ -84,17 +85,19 @@ void process_entry(struct shm_log_entry *e)
                 ip4_ntoa(e->ip_address, ip_str);
 
 
-	    syslog(LOG_INFO,"%lu %s %u %s %s %s", e->timestamp, e->interface, e->vlan_tag, 
+	   syslog(LOG_INFO,"%lu %s %u %s %s %s", e->timestamp, e->interface, e->vlan_tag, 
                                 mac_str, ip_str, origin_to_string(e->origin));
-
+	  if (arguments.foreground == 1)
+		printf("%lu %s %u %s %s %s\n", e->timestamp, e->interface, e->vlan_tag, 
+                                mac_str, ip_str, origin_to_string(e->origin));
 }
 
 
 
-int main(int argc, char *argv[])
+int main(int argc, char *argv[]) 
 {
 
-	struct arguments arguments;
+
 
 	arguments.facility = LOG_USER;
 	arguments.foreground = 0;
@@ -116,6 +119,7 @@ if (!arguments.foreground) {
 		sid = setsid();
 		if(sid < 0)
 			syslog(LOG_ERR,"Error starting new session");
+		
 
 }
 
